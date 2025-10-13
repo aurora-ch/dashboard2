@@ -52,12 +52,12 @@ export async function POST(req: Request) {
       data
     });
 
-  } catch (error: any) {
+      } catch (error: unknown) {
     console.error("Agent creation error:", error);
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || "Failed to create agent" 
+        error: error instanceof Error ? error.message : "Failed to create agent" 
       },
       { status: 500 }
     );

@@ -9,6 +9,14 @@ import { Switch } from "@/components/ui/switch";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { Save, Mail, Phone, Clock, AlertCircle } from "lucide-react";
 
+interface OpeningHours {
+  [key: string]: {
+    enabled: boolean;
+    open: string;
+    close: string;
+  };
+}
+
 interface ReceptionistSettings {
   id: string;
   business_name: string;
@@ -18,7 +26,7 @@ interface ReceptionistSettings {
   fallback_email: string;
   fallback_phone: string;
   custom_notes: string;
-  opening_hours: any;
+  opening_hours: OpeningHours;
   status: string;
   status_message: string;
 }
@@ -92,7 +100,7 @@ export default function SettingsPage() {
     }
   }
 
-  function updateSetting(field: keyof ReceptionistSettings, value: any) {
+  function updateSetting(field: keyof ReceptionistSettings, value: string | boolean | OpeningHours) {
     if (!settings) return;
     setSettings({ ...settings, [field]: value });
   }
@@ -189,7 +197,7 @@ export default function SettingsPage() {
             Fallback Options
           </CardTitle>
           <CardDescription>
-            Contact information to provide when the AI can't help
+            Contact information to provide when the AI can&apos;t help
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -207,7 +215,7 @@ export default function SettingsPage() {
                 placeholder="contact@yourbusiness.com"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Email to contact if AI can't help
+                Email to contact if AI can&apos;t help
               </p>
             </div>
             <div>
@@ -222,7 +230,7 @@ export default function SettingsPage() {
                 placeholder="+1 (555) 123-4567"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Phone number to call if AI can't help
+                Phone number to call if AI can&apos;t help
               </p>
             </div>
           </div>
@@ -234,7 +242,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Custom Notes</CardTitle>
           <CardDescription>
-            Additional information for the AI receptionist (e.g., "Closed Thursday 8.10.25")
+            Additional information for the AI receptionist (e.g., &quot;Closed Thursday 8.10.25&quot;)
           </CardDescription>
         </CardHeader>
         <CardContent>

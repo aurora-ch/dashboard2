@@ -51,10 +51,10 @@ export default function ReceptionistPage() {
         success: data.success,
         message: data.message || "Agent created successfully"
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       setAgentResult({
         success: false,
-        message: e?.response?.data?.error || e?.message || "Failed to create agent"
+        message: e instanceof Error ? e.message : "Failed to create agent"
       });
     } finally {
       setIsCreatingAgent(false);
@@ -70,7 +70,7 @@ export default function ReceptionistPage() {
         agentId: agentResult.agentId
       });
       console.log("Call initiated:", data);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Call failed:", e);
     } finally {
       setIsCalling(false);

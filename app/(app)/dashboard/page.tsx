@@ -192,7 +192,7 @@ export default function DashboardPage() {
       {/* Call Summary */}
       <Card className="bg-background/60 backdrop-blur">
         <CardHeader>
-          <CardTitle>Today's Call Summary</CardTitle>
+          <CardTitle>Today&apos;s Call Summary</CardTitle>
           <CardDescription>
             {calls.length} calls handled today
           </CardDescription>

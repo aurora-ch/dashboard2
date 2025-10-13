@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/logs") || 
       pathname.startsWith("/receptionist") || pathname.startsWith("/settings")) {
     
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {

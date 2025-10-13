@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Loader } from "@googlemaps/js-api-loader";
+import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 
 interface PlaceResult {
   place_id: string;
@@ -30,13 +30,13 @@ export function GooglePlacesAutocomplete({
   useEffect(() => {
     const initAutocomplete = async () => {
       try {
-        const loader = new Loader({
-          apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-          version: "weekly",
+        setOptions({
+          key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+          v: "weekly",
           libraries: ["places"],
         });
 
-        await loader.load();
+        await importLibrary("places");
         setIsLoaded(true);
 
         if (inputRef.current && !autocompleteRef.current) {

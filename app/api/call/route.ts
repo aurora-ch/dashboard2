@@ -32,16 +32,16 @@ export async function POST(req: Request) {
       message: "Call initiated successfully"
     });
 
-  } catch (error: any) {
-    console.error("Call error:", error);
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: error.message || "Failed to initiate call" 
-      },
-      { status: 500 }
-    );
-  }
+      } catch (error: unknown) {
+        console.error("Call error:", error);
+        return NextResponse.json(
+          {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed to initiate call"
+          },
+          { status: 500 }
+        );
+      }
 }
 
 
