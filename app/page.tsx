@@ -39,43 +39,72 @@ function HomeContent() {
       if (code) {
         try {
           console.log('✅ OAuth callback detected with code:', code);
+          console.log('🔄 Attempting to exchange code for session...');
+          
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          
           if (error) {
             console.error('❌ OAuth callback error:', error);
+            console.error('Error details:', {
+              message: error.message,
+              status: error.status,
+              statusText: error.statusText
+            });
             return;
           }
+          
+          console.log('✅ Code exchange successful:', { 
+            hasUser: !!data.user, 
+            hasSession: !!data.session,
+            userEmail: data.user?.email 
+          });
+          
           if (data.user) {
             console.log('✅ OAuth successful, user:', data.user.email);
+            
             // Create user profile if it doesn't exist
             try {
-              const { data: profile } = await supabase
+              console.log('📝 Checking for existing user profile...');
+              const { data: profile, error: profileError } = await supabase
                 .from('user_profiles')
                 .select('*')
                 .eq('id', data.user.id)
                 .single();
               
-              if (!profile) {
+              if (profileError && profileError.code !== 'PGRST116') {
+                console.log('⚠️ Profile table might not exist, continuing without profile creation');
+              } else if (!profile) {
                 console.log('📝 Creating user profile...');
-                // Create profile if it doesn't exist
-                await supabase
+                const { error: insertError } = await supabase
                   .from('user_profiles')
                   .insert({
                     id: data.user.id,
                     full_name: data.user.user_metadata?.full_name || data.user.email || 'User',
                     avatar_url: data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture,
                   });
+                
+                if (insertError) {
+                  console.log('⚠️ Could not create profile (table might not exist):', insertError.message);
+                } else {
+                  console.log('✅ User profile created successfully');
+                }
+              } else {
+                console.log('✅ User profile already exists');
               }
             } catch (profileError) {
-              console.error('❌ Error creating user profile:', profileError);
+              console.log('⚠️ Profile creation skipped (table might not exist):', profileError);
             }
             
             console.log('🚀 Redirecting to dashboard...');
             // Redirect to dashboard after successful authentication
             window.location.href = '/dashboard';
             return;
+          } else {
+            console.error('❌ No user data in OAuth response');
           }
         } catch (error) {
           console.error('❌ OAuth callback error:', error);
+          console.error('Error stack:', error.stack);
         }
       } else {
         console.log('ℹ️ No OAuth code found in URL');

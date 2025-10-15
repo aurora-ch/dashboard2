@@ -34,13 +34,16 @@ export default function DashboardPage() {
   const supabase = createSupabaseBrowserClient();
 
   const loadDashboardData = useCallback(async () => {
+    console.log('📊 Starting dashboard data load...');
     try {
       // Load today's metrics
       const today = new Date().toISOString().split('T')[0];
+      console.log('📅 Loading data for date:', today);
       
       // Try to load metrics, but don't fail if table doesn't exist
       let metricsData = null;
       try {
+        console.log('📈 Attempting to load daily metrics...');
         const { data, error } = await supabase
           .from('daily_metrics')
           .select('*')
@@ -49,9 +52,12 @@ export default function DashboardPage() {
         
         if (!error) {
           metricsData = data;
+          console.log('✅ Daily metrics loaded:', metricsData);
+        } else {
+          console.log('⚠️ Daily metrics error:', error.message);
         }
       } catch (metricsError) {
-        console.log('Daily metrics table not available:', metricsError);
+        console.log('⚠️ Daily metrics table not available:', metricsError.message);
       }
 
       // Try to load calls, but don't fail if table doesn't exist
@@ -86,6 +92,12 @@ export default function DashboardPage() {
         console.log('Receptionist settings table not available:', receptionistError);
       }
 
+      console.log('📊 Setting dashboard data...', {
+        metrics: metricsData || 'default',
+        callsCount: callsData?.length || 0,
+        status: receptionistData?.status || 'ready'
+      });
+      
       setMetrics(metricsData || {
         handled_calls: 0,
         missed_calls: 0,
@@ -98,8 +110,10 @@ export default function DashboardPage() {
         status: receptionistData?.status || 'ready',
         message: receptionistData?.status_message
       });
+      
+      console.log('✅ Dashboard data loaded successfully');
     } catch (error) {
-      console.error('Error loading dashboard:', error);
+      console.error('❌ Error loading dashboard:', error);
       // Set default values on error
       setMetrics({
         handled_calls: 0,
@@ -114,17 +128,19 @@ export default function DashboardPage() {
         message: 'System ready'
       });
     } finally {
+      console.log('🏁 Dashboard loading complete, setting loading to false');
       setLoading(false);
     }
   }, [supabase]);
 
   useEffect(() => {
+    console.log('🏠 Dashboard page mounted, starting data load...');
     loadDashboardData();
     
     // Set a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
       if (loading) {
-        console.log('Dashboard loading timeout, setting default values');
+        console.log('⏰ Dashboard loading timeout, setting default values');
         setLoading(false);
         setMetrics({
           handled_calls: 0,
