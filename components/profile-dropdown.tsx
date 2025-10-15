@@ -77,7 +77,7 @@ export function ProfileDropdown() {
             .single();
           profile = profileData;
         } catch (profileError) {
-          console.log('User profiles table not available, using auth data only');
+          console.log('User profiles table not available, using auth data only:', profileError instanceof Error ? profileError.message : String(profileError));
         }
 
         if (profile) {

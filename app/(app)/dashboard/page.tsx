@@ -57,7 +57,7 @@ export default function DashboardPage() {
           console.log('⚠️ Daily metrics error:', error.message);
         }
       } catch (metricsError) {
-        console.log('⚠️ Daily metrics table not available:', metricsError.message);
+        console.log('⚠️ Daily metrics table not available:', metricsError instanceof Error ? metricsError.message : String(metricsError));
       }
 
       // Try to load calls, but don't fail if table doesn't exist
@@ -74,7 +74,7 @@ export default function DashboardPage() {
           callsData = data;
         }
       } catch (callsError) {
-        console.log('Call logs table not available:', callsError);
+        console.log('Call logs table not available:', callsError instanceof Error ? callsError.message : String(callsError));
       }
 
       // Try to load receptionist status, but don't fail if table doesn't exist
@@ -89,7 +89,7 @@ export default function DashboardPage() {
           receptionistData = data;
         }
       } catch (receptionistError) {
-        console.log('Receptionist settings table not available:', receptionistError);
+        console.log('Receptionist settings table not available:', receptionistError instanceof Error ? receptionistError.message : String(receptionistError));
       }
 
       console.log('📊 Setting dashboard data...', {
