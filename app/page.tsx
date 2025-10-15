@@ -103,7 +103,7 @@ function HomeContent() {
           }
         } catch (error) {
           console.error('❌ OAuth callback error:', error);
-          console.error('Error stack:', error.stack);
+          console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace available');
         }
       } else {
         console.log('ℹ️ No OAuth code found in URL');
