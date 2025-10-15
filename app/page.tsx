@@ -86,6 +86,16 @@ function HomeContent() {
       try {
         const { data: { user: authUser } } = await supabase.auth.getUser();
         setUser(authUser);
+        
+        // If user is authenticated, redirect to dashboard
+        if (authUser) {
+          console.log('✅ User has live session, redirecting to dashboard');
+          // Small delay to prevent flash of content
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 100);
+          return;
+        }
       } catch (error) {
         console.error('Error checking user:', error);
       } finally {
@@ -96,6 +106,20 @@ function HomeContent() {
     handleOAuthCallback();
     checkUser();
   }, [searchParams, supabase, router]);
+
+  // Show loading state while checking session
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent aurora-glow">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-foreground"></div>
+          </div>
+          <p className="text-muted-foreground">Checking session...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -113,10 +137,10 @@ function HomeContent() {
             </div>
             
             <div className="flex items-center space-x-4">
-              {!loading && user && (
+              {user && (
                 <ProfileDropdown />
               )}
-              {!loading && !user && (
+              {!user && (
                 <Link href="/signin">
                   <Button variant="outline" className="glass-button">
                     Sign In
