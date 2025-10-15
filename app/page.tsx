@@ -1,3 +1,5 @@
+"use client";
+
 import { SetupCheck } from "@/components/setup-check";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,10 +18,110 @@ import {
   Sparkles
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { ProfileDropdown } from "@/components/profile-dropdown";
+import { User } from "@supabase/supabase-js";
 
 function HomeContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const supabase = createSupabaseBrowserClient();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const code = searchParams.get('code');
+      if (code) {
+        try {
+          console.log('Handling OAuth callback with code:', code);
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) {
+            console.error('OAuth callback error:', error);
+            return;
+          }
+          if (data.user) {
+            console.log('OAuth successful, redirecting to dashboard');
+            // Create user profile if it doesn't exist
+            try {
+              const { data: profile } = await supabase
+                .from('user_profiles')
+                .select('*')
+                .eq('id', data.user.id)
+                .single();
+              
+              if (!profile) {
+                // Create profile if it doesn't exist
+                await supabase
+                  .from('user_profiles')
+                  .insert({
+                    id: data.user.id,
+                    full_name: data.user.user_metadata?.full_name || data.user.email || 'User',
+                    avatar_url: data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture,
+                  });
+              }
+            } catch (profileError) {
+              console.error('Error creating user profile:', profileError);
+            }
+            
+            // Redirect to dashboard after successful authentication
+            router.push('/dashboard');
+            return;
+          }
+        } catch (error) {
+          console.error('OAuth callback error:', error);
+        }
+      }
+    };
+
+    const checkUser = async () => {
+      try {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        setUser(authUser);
+      } catch (error) {
+        console.error('Error checking user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    handleOAuthCallback();
+    checkUser();
+  }, [searchParams, supabase, router]);
+
   return (
     <div className="min-h-screen">
+      {/* Header with Profile */}
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center space-x-2">
+                <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                  <span className="text-lg font-bold text-foreground">A</span>
+                </div>
+                <span className="text-xl font-bold text-foreground">Aurora</span>
+              </Link>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              {!loading && user && (
+                <ProfileDropdown />
+              )}
+              {!loading && !user && (
+                <Link href="/signin">
+                  <Button variant="outline" className="glass-button">
+                    Sign In
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Background Effects */}
