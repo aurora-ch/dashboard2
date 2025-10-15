@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { Phone, PhoneOff, CheckCircle, AlertCircle, Clock, DollarSign } from "lucide-react";
 
@@ -33,11 +33,7 @@ export default function DashboardPage() {
 
   const supabase = createSupabaseBrowserClient();
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  async function loadDashboardData() {
+  const loadDashboardData = useCallback(async () => {
     try {
       // Load today's metrics
       const today = new Date().toISOString().split('T')[0];
@@ -78,7 +74,11 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [supabase]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
 
   function formatDuration(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
@@ -106,19 +106,24 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="rounded-xl border bg-background/60 p-4 backdrop-blur animate-pulse">
-            <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-            <div className="h-8 bg-muted rounded w-1/2"></div>
+      <DashboardLayout>
+        <div className="p-6">
+          <div className="grid gap-4 md:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="rounded-xl border bg-background/60 p-4 backdrop-blur animate-pulse">
+                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-muted rounded w-1/2"></div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <DashboardLayout>
+      <div className="p-6 space-y-6">
       {/* Status Card */}
       <Card className="bg-background/60 backdrop-blur">
         <CardHeader>
@@ -297,7 +302,8 @@ export default function DashboardPage() {
           </Tabs>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
 

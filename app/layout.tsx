@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Providers } from "@/components/providers/theme-provider";
+import { AuthProvider } from "@/components/auth-provider";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
@@ -21,7 +22,9 @@ export default function RootLayout({
           "[--glass-bg:theme(colors.background/0.6)]"
         )}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <AuthProvider>{children}</AuthProvider>
+        </Providers>
       </body>
     </html>
   );

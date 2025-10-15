@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: aurora-dashboard
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: VAPI_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://aurora-dashboard.onrender.com

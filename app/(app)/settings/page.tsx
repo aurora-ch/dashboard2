@@ -1,13 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
-import { Save, Mail, Phone, Clock, AlertCircle } from "lucide-react";
+import { Save, Mail, Phone, Clock, AlertCircle, Settings as SettingsIcon, Building, CheckCircle } from "lucide-react";
 
 interface OpeningHours {
   [key: string]: {
@@ -39,11 +40,7 @@ export default function SettingsPage() {
 
   const supabase = createSupabaseBrowserClient();
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
-  async function loadSettings() {
+  const loadSettings = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('receptionist_settings')
@@ -73,7 +70,11 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [supabase]);
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
 
   async function saveSettings() {
     if (!settings) return;
@@ -107,44 +108,66 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="rounded-xl border bg-background/60 p-6 backdrop-blur animate-pulse">
-            <div className="h-6 bg-muted rounded w-1/3 mb-4"></div>
-            <div className="space-y-3">
-              <div className="h-4 bg-muted rounded w-1/2"></div>
-              <div className="h-10 bg-muted rounded"></div>
-            </div>
+      <DashboardLayout>
+        <div className="p-6">
+          <div className="space-y-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="rounded-xl border bg-background/60 p-6 backdrop-blur animate-pulse">
+                <div className="h-6 bg-muted rounded w-1/3 mb-4"></div>
+                <div className="space-y-3">
+                  <div className="h-4 bg-muted rounded w-1/2"></div>
+                  <div className="h-10 bg-muted rounded"></div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Status Message */}
-      {message && (
-        <Card className={`bg-background/60 backdrop-blur ${
-          message.type === 'success' ? 'border-green-500/20' : 'border-red-500/20'
-        }`}>
-          <CardContent className="pt-6">
-            <div className={`flex items-center gap-2 ${
-              message.type === 'success' ? 'text-green-600' : 'text-red-600'
-            }`}>
-              <AlertCircle className="h-4 w-4" />
-              <span>{message.text}</span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+    <DashboardLayout>
+      <div className="p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+            <p className="text-muted-foreground">Configure your AI receptionist and business preferences</p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <SettingsIcon className="h-6 w-6 text-primary" />
+          </div>
+        </div>
+        {/* Status Message */}
+        {message && (
+          <Card className={`bg-background/60 backdrop-blur ${
+            message.type === 'success' ? 'border-accent/20' : 'border-destructive/20'
+          }`}>
+            <CardContent className="pt-6">
+              <div className={`flex items-center gap-2 ${
+                message.type === 'success' ? 'text-accent' : 'text-destructive'
+              }`}>
+                {message.type === 'success' ? (
+                  <CheckCircle className="h-4 w-4" />
+                ) : (
+                  <AlertCircle className="h-4 w-4" />
+                )}
+                <span>{message.text}</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-      {/* Business Information */}
-      <Card className="bg-background/60 backdrop-blur">
-        <CardHeader>
-          <CardTitle>Business Information</CardTitle>
-          <CardDescription>Your business details that the AI receptionist will use</CardDescription>
-        </CardHeader>
+        {/* Business Information */}
+        <Card className="bg-background/60 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Building className="w-5 h-5 mr-2 text-primary" />
+              Business Information
+            </CardTitle>
+            <CardDescription>Your business details that the AI receptionist will use</CardDescription>
+          </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
@@ -327,23 +350,28 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <Button onClick={saveSettings} disabled={saving} className="min-w-32">
-          {saving ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4 mr-2" />
-              Save Settings
-            </>
-          )}
-        </Button>
+        {/* Save Button */}
+        <div className="flex justify-end">
+          <Button 
+            onClick={saveSettings} 
+            disabled={saving} 
+            className="min-w-32 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground"
+          >
+            {saving ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
+                Saving...
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <Save className="h-4 w-4 mr-2" />
+                Save Settings
+              </div>
+            )}
+          </Button>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
 

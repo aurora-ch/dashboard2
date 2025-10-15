@@ -1,11 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
-import { Play, Pause, Download, Calendar, Clock, Phone } from "lucide-react";
+import { Play, Pause, Download, Phone } from "lucide-react";
 
 interface CallLog {
   id: string;
@@ -37,18 +37,14 @@ interface VapiCall {
 export default function LogsPage() {
   const [calls, setCalls] = useState<CallLog[]>([]);
   const [selectedCall, setSelectedCall] = useState<CallLog | null>(null);
-  const [vapiCall, setVapiCall] = useState<VapiCall | null>(null);
+  const [, setVapiCall] = useState<VapiCall | null>(null);
   const [loading, setLoading] = useState(true);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState('today');
 
   const supabase = createSupabaseBrowserClient();
 
-  useEffect(() => {
-    loadCallLogs();
-  }, [dateFilter]);
-
-  async function loadCallLogs() {
+  const loadCallLogs = useCallback(async () => {
     try {
       let dateFilterQuery;
       const now = new Date();
@@ -89,7 +85,11 @@ export default function LogsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [dateFilter, supabase]);
+
+  useEffect(() => {
+    loadCallLogs();
+  }, [loadCallLogs]);
 
   async function loadVapiCallDetails(callLog: CallLog) {
     if (!callLog.vapi_call_id) return;
@@ -153,19 +153,24 @@ export default function LogsPage() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="rounded-xl border bg-background/60 p-4 backdrop-blur animate-pulse">
-            <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-            <div className="h-8 bg-muted rounded w-1/2"></div>
+      <DashboardLayout>
+        <div className="p-6">
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="rounded-xl border bg-background/60 p-4 backdrop-blur animate-pulse">
+                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-muted rounded w-1/2"></div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <DashboardLayout>
+      <div className="p-6 space-y-6">
       {/* Filters */}
       <Card className="bg-background/60 backdrop-blur">
         <CardHeader>
@@ -335,7 +340,8 @@ export default function LogsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
 
