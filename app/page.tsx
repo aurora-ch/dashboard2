@@ -19,14 +19,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { ProfileDropdown } from "@/components/profile-dropdown";
 import { User } from "@supabase/supabase-js";
 
 function HomeContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createSupabaseBrowserClient();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
