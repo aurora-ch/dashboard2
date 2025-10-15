@@ -47,8 +47,7 @@ function HomeContent() {
             console.error('❌ OAuth callback error:', error);
             console.error('Error details:', {
               message: error.message,
-              status: error.status,
-              statusText: error.statusText
+              status: error.status
             });
             return;
           }
