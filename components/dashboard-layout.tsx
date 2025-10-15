@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ProfileDropdown } from "@/components/profile-dropdown";
+import Image from "next/image";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -48,8 +49,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           {/* Logo */}
           <div className="flex h-16 items-center justify-between px-6 border-b border-sidebar-border">
             <div className="flex items-center space-x-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent aurora-glow">
-                <span className="text-lg font-bold text-primary-foreground">A</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg">
+                <Image 
+                  src="/logos/logoblakc.png" 
+                  alt="Aurora" 
+                  width={32} 
+                  height={32}
+                  className="h-8 w-8 rounded-lg"
+                />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-sidebar-foreground">Aurora</h1>

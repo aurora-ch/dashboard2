@@ -120,10 +120,10 @@ export function ProfileDropdown() {
 
   function getStatusColor(status: string) {
     switch (status) {
-      case 'ready': return 'bg-accent/10 text-accent border-accent/20';
-      case 'problem': return 'bg-destructive/10 text-destructive border-destructive/20';
-      case 'maintenance': return 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20';
-      default: return 'bg-muted/10 text-muted-foreground border-muted/20';
+      case 'ready': return 'bg-muted/50 text-foreground border-border';
+      case 'problem': return 'bg-muted/30 text-muted-foreground border-border';
+      case 'maintenance': return 'bg-muted/40 text-muted-foreground border-border';
+      default: return 'bg-muted/30 text-muted-foreground border-border';
     }
   }
 
@@ -151,7 +151,7 @@ export function ProfileDropdown() {
         className="flex items-center space-x-2 h-10 px-3 border-border/50 hover:bg-muted/50"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 flex items-center justify-center">
+        <div className="h-8 w-8 rounded-full bg-muted border border-border flex items-center justify-center">
           {user.avatar_url ? (
             <Image 
               src={user.avatar_url} 
@@ -161,7 +161,7 @@ export function ProfileDropdown() {
               className="h-8 w-8 rounded-full object-cover"
             />
           ) : (
-            <User className="h-4 w-4 text-primary" />
+            <User className="h-4 w-4 text-muted-foreground" />
           )}
         </div>
         <div className="hidden md:block text-left">
@@ -181,7 +181,7 @@ export function ProfileDropdown() {
             <CardContent className="p-4 space-y-4">
               {/* User Info */}
               <div className="flex items-center space-x-3 pb-3 border-b border-border/50">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 flex items-center justify-center">
+                <div className="h-12 w-12 rounded-full bg-muted border border-border flex items-center justify-center">
                   {user.avatar_url ? (
                     <Image 
                       src={user.avatar_url} 
@@ -191,7 +191,7 @@ export function ProfileDropdown() {
                       className="h-12 w-12 rounded-full object-cover"
                     />
                   ) : (
-                    <User className="h-6 w-6 text-primary-foreground" />
+                    <User className="h-6 w-6 text-muted-foreground" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
