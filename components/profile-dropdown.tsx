@@ -67,12 +67,18 @@ export function ProfileDropdown() {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       
       if (authUser) {
-        // Get user profile from database
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', authUser.id)
-          .single();
+        // Try to get user profile from database, but don't fail if table doesn't exist
+        let profile = null;
+        try {
+          const { data: profileData } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', authUser.id)
+            .single();
+          profile = profileData;
+        } catch (profileError) {
+          console.log('User profiles table not available, using auth data only');
+        }
 
         if (profile) {
           setUser({
@@ -88,12 +94,12 @@ export function ProfileDropdown() {
             loadAgentInfo(profile.organization_id);
           }
         } else {
-          // Create profile if it doesn't exist
+          // Use auth data directly if profile table doesn't exist
           setUser({
             id: authUser.id,
-            full_name: authUser.user_metadata?.full_name || 'User',
+            full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
             email: authUser.email || '',
-            avatar_url: authUser.user_metadata?.avatar_url
+            avatar_url: authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture
           });
         }
       }
@@ -151,18 +157,26 @@ export function ProfileDropdown() {
         className="flex items-center space-x-2 h-10 px-3 border-border/50 hover:bg-muted/50"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="h-8 w-8 rounded-full bg-muted border border-border flex items-center justify-center">
-          {user.avatar_url ? (
-            <Image 
-              src={user.avatar_url} 
-              alt={user.full_name}
-              width={32}
-              height={32}
-              className="h-8 w-8 rounded-full object-cover"
-            />
-          ) : (
-            <User className="h-4 w-4 text-muted-foreground" />
-          )}
+        <div className="relative">
+          <div className="h-8 w-8 rounded-full bg-muted border border-border flex items-center justify-center">
+            {user.avatar_url ? (
+              <Image 
+                src={user.avatar_url} 
+                alt={user.full_name}
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-full object-cover"
+                onError={(e) => {
+                  // Fallback to default icon if image fails to load
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+            ) : null}
+            <User className={`h-4 w-4 text-muted-foreground ${user.avatar_url ? 'hidden' : ''}`} />
+          </div>
+          {/* Green dot indicator */}
+          <div className="absolute -top-1 -right-1 h-3 w-3 bg-green-500 rounded-full border-2 border-background"></div>
         </div>
         <div className="hidden md:block text-left">
           <p className="text-sm font-medium text-foreground">{user.full_name}</p>
@@ -181,18 +195,26 @@ export function ProfileDropdown() {
             <CardContent className="p-4 space-y-4">
               {/* User Info */}
               <div className="flex items-center space-x-3 pb-3 border-b border-border/50">
-                <div className="h-12 w-12 rounded-full bg-muted border border-border flex items-center justify-center">
-                  {user.avatar_url ? (
-                    <Image 
-                      src={user.avatar_url} 
-                      alt={user.full_name}
-                      width={48}
-                      height={48}
-                      className="h-12 w-12 rounded-full object-cover"
-                    />
-                  ) : (
-                    <User className="h-6 w-6 text-muted-foreground" />
-                  )}
+                <div className="relative">
+                  <div className="h-12 w-12 rounded-full bg-muted border border-border flex items-center justify-center">
+                    {user.avatar_url ? (
+                      <Image 
+                        src={user.avatar_url} 
+                        alt={user.full_name}
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 rounded-full object-cover"
+                        onError={(e) => {
+                          // Fallback to default icon if image fails to load
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null}
+                    <User className={`h-6 w-6 text-muted-foreground ${user.avatar_url ? 'hidden' : ''}`} />
+                  </div>
+                  {/* Green dot indicator */}
+                  <div className="absolute -top-1 -right-1 h-3 w-3 bg-green-500 rounded-full border-2 border-background"></div>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-foreground truncate">{user.full_name}</p>

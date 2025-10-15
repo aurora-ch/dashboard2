@@ -34,16 +34,18 @@ function HomeContent() {
   useEffect(() => {
     const handleOAuthCallback = async () => {
       const code = searchParams.get('code');
+      console.log('🔍 Checking for OAuth callback...', { code: !!code, url: window.location.href });
+      
       if (code) {
         try {
-          console.log('Handling OAuth callback with code:', code);
+          console.log('✅ OAuth callback detected with code:', code);
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) {
-            console.error('OAuth callback error:', error);
+            console.error('❌ OAuth callback error:', error);
             return;
           }
           if (data.user) {
-            console.log('OAuth successful, redirecting to dashboard');
+            console.log('✅ OAuth successful, user:', data.user.email);
             // Create user profile if it doesn't exist
             try {
               const { data: profile } = await supabase
@@ -53,6 +55,7 @@ function HomeContent() {
                 .single();
               
               if (!profile) {
+                console.log('📝 Creating user profile...');
                 // Create profile if it doesn't exist
                 await supabase
                   .from('user_profiles')
@@ -63,16 +66,19 @@ function HomeContent() {
                   });
               }
             } catch (profileError) {
-              console.error('Error creating user profile:', profileError);
+              console.error('❌ Error creating user profile:', profileError);
             }
             
+            console.log('🚀 Redirecting to dashboard...');
             // Redirect to dashboard after successful authentication
-            router.push('/dashboard');
+            window.location.href = '/dashboard';
             return;
           }
         } catch (error) {
-          console.error('OAuth callback error:', error);
+          console.error('❌ OAuth callback error:', error);
         }
+      } else {
+        console.log('ℹ️ No OAuth code found in URL');
       }
     };
 
