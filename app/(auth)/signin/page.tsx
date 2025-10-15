@@ -38,7 +38,7 @@ function SignInForm() {
     const { error } = await supabase.auth.signInWithOtp({ 
       email,
       options: {
-        emailRedirectTo: redirectUrl
+        emailRedirectTo: `${redirectUrl}/auth/callback?next=/dashboard`
       }
     });
     setStatus(error ? error.message : "Check your email for the magic link!");
@@ -59,7 +59,7 @@ function SignInForm() {
     const { error } = await supabase.auth.signInWithOAuth({ 
       provider: "google",
       options: {
-        redirectTo: redirectUrl
+        redirectTo: `${redirectUrl}/auth/callback?next=/dashboard`
       }
     });
     if (error) setStatus(error.message);

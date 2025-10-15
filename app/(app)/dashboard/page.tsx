@@ -37,25 +37,54 @@ export default function DashboardPage() {
     try {
       // Load today's metrics
       const today = new Date().toISOString().split('T')[0];
-      const { data: metricsData } = await supabase
-        .from('daily_metrics')
-        .select('*')
-        .eq('date', today)
-        .single();
+      
+      // Try to load metrics, but don't fail if table doesn't exist
+      let metricsData = null;
+      try {
+        const { data, error } = await supabase
+          .from('daily_metrics')
+          .select('*')
+          .eq('date', today)
+          .single();
+        
+        if (!error) {
+          metricsData = data;
+        }
+      } catch (metricsError) {
+        console.log('Daily metrics table not available:', metricsError);
+      }
 
-      // Load today's calls
-      const { data: callsData } = await supabase
-        .from('call_logs')
-        .select('*')
-        .gte('created_at', `${today}T00:00:00`)
-        .lte('created_at', `${today}T23:59:59`)
-        .order('created_at', { ascending: false });
+      // Try to load calls, but don't fail if table doesn't exist
+      let callsData = null;
+      try {
+        const { data, error } = await supabase
+          .from('call_logs')
+          .select('*')
+          .gte('created_at', `${today}T00:00:00`)
+          .lte('created_at', `${today}T23:59:59`)
+          .order('created_at', { ascending: false });
+        
+        if (!error) {
+          callsData = data;
+        }
+      } catch (callsError) {
+        console.log('Call logs table not available:', callsError);
+      }
 
-      // Load receptionist status
-      const { data: receptionistData } = await supabase
-        .from('receptionist_settings')
-        .select('status, status_message')
-        .single();
+      // Try to load receptionist status, but don't fail if table doesn't exist
+      let receptionistData = null;
+      try {
+        const { data, error } = await supabase
+          .from('receptionist_settings')
+          .select('status, status_message')
+          .single();
+        
+        if (!error) {
+          receptionistData = data;
+        }
+      } catch (receptionistError) {
+        console.log('Receptionist settings table not available:', receptionistError);
+      }
 
       setMetrics(metricsData || {
         handled_calls: 0,
@@ -71,6 +100,19 @@ export default function DashboardPage() {
       });
     } catch (error) {
       console.error('Error loading dashboard:', error);
+      // Set default values on error
+      setMetrics({
+        handled_calls: 0,
+        missed_calls: 0,
+        total_duration: 0,
+        total_cost: 0,
+        actions_taken: 0
+      });
+      setCalls([]);
+      setStatus({
+        status: 'ready',
+        message: 'System ready'
+      });
     } finally {
       setLoading(false);
     }
@@ -78,7 +120,29 @@ export default function DashboardPage() {
 
   useEffect(() => {
     loadDashboardData();
-  }, [loadDashboardData]);
+    
+    // Set a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.log('Dashboard loading timeout, setting default values');
+        setLoading(false);
+        setMetrics({
+          handled_calls: 0,
+          missed_calls: 0,
+          total_duration: 0,
+          total_cost: 0,
+          actions_taken: 0
+        });
+        setCalls([]);
+        setStatus({
+          status: 'ready',
+          message: 'System ready'
+        });
+      }
+    }, 10000); // 10 second timeout
+
+    return () => clearTimeout(timeout);
+  }, [loadDashboardData, loading]);
 
   function formatDuration(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
