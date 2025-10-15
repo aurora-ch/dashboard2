@@ -32,23 +32,50 @@ function HomeContent() {
       const code = searchParams.get('code');
       if (code) {
         try {
+          console.log('Handling OAuth callback with code:', code);
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) {
             console.error('OAuth callback error:', error);
+            // Redirect to signin on error
+            router.push('/signin?error=oauth_error');
             return;
           }
           if (data.user) {
+            console.log('OAuth successful, redirecting to dashboard');
+            // Create user profile if it doesn't exist
+            try {
+              const { data: profile } = await supabase
+                .from('user_profiles')
+                .select('*')
+                .eq('id', data.user.id)
+                .single();
+              
+              if (!profile) {
+                // Create profile if it doesn't exist
+                await supabase
+                  .from('user_profiles')
+                  .insert({
+                    id: data.user.id,
+                    full_name: data.user.user_metadata?.full_name || data.user.email || 'User',
+                    avatar_url: data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture,
+                  });
+              }
+            } catch (profileError) {
+              console.error('Error creating user profile:', profileError);
+            }
+            
             // Redirect to dashboard after successful authentication
             router.push('/dashboard');
           }
         } catch (error) {
           console.error('OAuth callback error:', error);
+          router.push('/signin?error=oauth_error');
         }
       }
     };
 
     handleOAuthCallback();
-  }, [searchParams, supabase.auth, router]);
+  }, [searchParams, supabase, router]);
 
   return (
     <div className="min-h-screen">
@@ -207,7 +234,7 @@ function HomeContent() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
           </div>
-        </div>
+      </div>
       </section>
     </div>
   );

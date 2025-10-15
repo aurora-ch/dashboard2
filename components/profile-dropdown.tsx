@@ -147,11 +147,11 @@ export function ProfileDropdown() {
   return (
     <div className="relative">
       <Button
-        variant="ghost"
-        className="flex items-center space-x-2 h-10 px-3"
+        variant="outline"
+        className="flex items-center space-x-2 h-10 px-3 border-border/50 hover:bg-muted/50"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 flex items-center justify-center">
           {user.avatar_url ? (
             <Image 
               src={user.avatar_url} 
@@ -161,7 +161,7 @@ export function ProfileDropdown() {
               className="h-8 w-8 rounded-full object-cover"
             />
           ) : (
-            <User className="h-4 w-4 text-primary-foreground" />
+            <User className="h-4 w-4 text-primary" />
           )}
         </div>
         <div className="hidden md:block text-left">
@@ -177,11 +177,11 @@ export function ProfileDropdown() {
             className="fixed inset-0 z-10" 
             onClick={() => setIsOpen(false)}
           />
-          <Card className="absolute right-0 top-12 z-20 w-80 shadow-xl border-border/50 bg-card/95 backdrop-blur-sm">
+          <Card className="absolute right-0 top-12 z-20 w-80 shadow-lg border-border/30 bg-card/98 backdrop-blur-sm">
             <CardContent className="p-4 space-y-4">
               {/* User Info */}
-              <div className="flex items-center space-x-3 pb-3 border-b border-border">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <div className="flex items-center space-x-3 pb-3 border-b border-border/50">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 flex items-center justify-center">
                   {user.avatar_url ? (
                     <Image 
                       src={user.avatar_url} 

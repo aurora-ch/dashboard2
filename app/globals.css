@@ -45,100 +45,100 @@
 
 :root {
   --radius: 0.75rem;
-  
-  /* Aurora Borealis Light Theme */
-  --background: oklch(0.98 0.01 280);
-  --foreground: oklch(0.15 0.02 280);
-  --card: oklch(0.99 0.01 280);
-  --card-foreground: oklch(0.15 0.02 280);
-  --popover: oklch(0.99 0.01 280);
-  --popover-foreground: oklch(0.15 0.02 280);
-  
-  /* Primary: Deep Purple */
-  --primary: oklch(0.45 0.15 280);
-  --primary-foreground: oklch(0.98 0.01 280);
-  
-  /* Secondary: Aurora Green */
-  --secondary: oklch(0.85 0.12 160);
-  --secondary-foreground: oklch(0.15 0.02 280);
-  
-  /* Muted: Soft Purple */
-  --muted: oklch(0.95 0.05 280);
-  --muted-foreground: oklch(0.5 0.08 280);
-  
-  /* Accent: Bright Green */
-  --accent: oklch(0.65 0.18 160);
-  --accent-foreground: oklch(0.98 0.01 280);
-  
-  --destructive: oklch(0.6 0.2 20);
-  --border: oklch(0.9 0.05 280);
-  --input: oklch(0.95 0.05 280);
-  --ring: oklch(0.45 0.15 280);
-  
-  /* Chart colors - Aurora palette */
-  --chart-1: oklch(0.6 0.2 280);  /* Purple */
-  --chart-2: oklch(0.7 0.18 160); /* Green */
-  --chart-3: oklch(0.5 0.15 300); /* Deep Purple */
-  --chart-4: oklch(0.8 0.12 180); /* Cyan */
-  --chart-5: oklch(0.65 0.16 200); /* Blue */
-  
-  /* Sidebar - Dark Purple */
-  --sidebar: oklch(0.12 0.08 280);
-  --sidebar-foreground: oklch(0.9 0.05 280);
-  --sidebar-primary: oklch(0.7 0.18 160);
-  --sidebar-primary-foreground: oklch(0.12 0.08 280);
-  --sidebar-accent: oklch(0.2 0.1 280);
-  --sidebar-accent-foreground: oklch(0.9 0.05 280);
-  --sidebar-border: oklch(0.25 0.1 280);
-  --sidebar-ring: oklch(0.7 0.18 160);
+
+  /* Pastel Light Theme */
+  --background: oklch(0.98 0.005 280);
+  --foreground: oklch(0.2 0.01 280);
+  --card: oklch(0.99 0.005 280);
+  --card-foreground: oklch(0.2 0.01 280);
+  --popover: oklch(0.99 0.005 280);
+  --popover-foreground: oklch(0.2 0.01 280);
+
+  /* Primary: Soft Pastel Purple */
+  --primary: oklch(0.7 0.08 280);
+  --primary-foreground: oklch(0.98 0.005 280);
+
+  /* Secondary: Light Grey */
+  --secondary: oklch(0.92 0.01 280);
+  --secondary-foreground: oklch(0.3 0.01 280);
+
+  /* Muted: Very Light Grey */
+  --muted: oklch(0.96 0.005 280);
+  --muted-foreground: oklch(0.5 0.01 280);
+
+  /* Accent: Soft Pastel Purple */
+  --accent: oklch(0.8 0.06 280);
+  --accent-foreground: oklch(0.98 0.005 280);
+
+  --destructive: oklch(0.6 0.15 20);
+  --border: oklch(0.9 0.01 280);
+  --input: oklch(0.95 0.01 280);
+  --ring: oklch(0.7 0.08 280);
+
+  /* Chart colors - Pastel palette */
+  --chart-1: oklch(0.75 0.08 280);  /* Pastel Purple */
+  --chart-2: oklch(0.8 0.06 300);   /* Light Purple */
+  --chart-3: oklch(0.7 0.06 260);   /* Soft Purple */
+  --chart-4: oklch(0.85 0.05 320);  /* Very Light Purple */
+  --chart-5: oklch(0.9 0.04 280);   /* Almost White Purple */
+
+  /* Sidebar - Light Grey */
+  --sidebar: oklch(0.95 0.01 280);
+  --sidebar-foreground: oklch(0.3 0.01 280);
+  --sidebar-primary: oklch(0.7 0.08 280);
+  --sidebar-primary-foreground: oklch(0.95 0.01 280);
+  --sidebar-accent: oklch(0.9 0.01 280);
+  --sidebar-accent-foreground: oklch(0.3 0.01 280);
+  --sidebar-border: oklch(0.85 0.01 280);
+  --sidebar-ring: oklch(0.7 0.08 280);
 }
 
 .dark {
-  /* Aurora Borealis Dark Theme */
-  --background: oklch(0.08 0.05 280);
-  --foreground: oklch(0.95 0.02 280);
-  --card: oklch(0.12 0.08 280);
-  --card-foreground: oklch(0.95 0.02 280);
-  --popover: oklch(0.12 0.08 280);
-  --popover-foreground: oklch(0.95 0.02 280);
-  
-  /* Primary: Bright Purple */
-  --primary: oklch(0.7 0.2 280);
-  --primary-foreground: oklch(0.08 0.05 280);
-  
-  /* Secondary: Aurora Green */
-  --secondary: oklch(0.2 0.1 160);
-  --secondary-foreground: oklch(0.95 0.02 280);
-  
-  /* Muted: Dark Purple */
-  --muted: oklch(0.15 0.08 280);
-  --muted-foreground: oklch(0.6 0.1 280);
-  
-  /* Accent: Bright Green */
-  --accent: oklch(0.6 0.2 160);
-  --accent-foreground: oklch(0.08 0.05 280);
-  
-  --destructive: oklch(0.7 0.2 20);
-  --border: oklch(0.2 0.1 280);
-  --input: oklch(0.15 0.08 280);
-  --ring: oklch(0.7 0.2 280);
-  
-  /* Chart colors - Aurora dark palette */
-  --chart-1: oklch(0.7 0.2 280);  /* Bright Purple */
-  --chart-2: oklch(0.6 0.2 160);  /* Bright Green */
-  --chart-3: oklch(0.8 0.15 300); /* Light Purple */
-  --chart-4: oklch(0.7 0.18 180); /* Cyan */
-  --chart-5: oklch(0.75 0.16 200); /* Light Blue */
-  
-  /* Sidebar - Even Darker Purple */
-  --sidebar: oklch(0.06 0.05 280);
-  --sidebar-foreground: oklch(0.9 0.05 280);
-  --sidebar-primary: oklch(0.6 0.2 160);
-  --sidebar-primary-foreground: oklch(0.06 0.05 280);
-  --sidebar-accent: oklch(0.1 0.08 280);
-  --sidebar-accent-foreground: oklch(0.9 0.05 280);
-  --sidebar-border: oklch(0.15 0.08 280);
-  --sidebar-ring: oklch(0.6 0.2 160);
+  /* Pastel Dark Theme */
+  --background: oklch(0.1 0.01 280);
+  --foreground: oklch(0.9 0.01 280);
+  --card: oklch(0.12 0.01 280);
+  --card-foreground: oklch(0.9 0.01 280);
+  --popover: oklch(0.12 0.01 280);
+  --popover-foreground: oklch(0.9 0.01 280);
+
+  /* Primary: Soft Pastel Purple */
+  --primary: oklch(0.6 0.08 280);
+  --primary-foreground: oklch(0.1 0.01 280);
+
+  /* Secondary: Dark Grey */
+  --secondary: oklch(0.2 0.01 280);
+  --secondary-foreground: oklch(0.9 0.01 280);
+
+  /* Muted: Dark Grey */
+  --muted: oklch(0.15 0.01 280);
+  --muted-foreground: oklch(0.6 0.01 280);
+
+  /* Accent: Soft Pastel Purple */
+  --accent: oklch(0.5 0.06 280);
+  --accent-foreground: oklch(0.1 0.01 280);
+
+  --destructive: oklch(0.6 0.15 20);
+  --border: oklch(0.2 0.01 280);
+  --input: oklch(0.15 0.01 280);
+  --ring: oklch(0.6 0.08 280);
+
+  /* Chart colors - Pastel dark palette */
+  --chart-1: oklch(0.6 0.08 280);  /* Pastel Purple */
+  --chart-2: oklch(0.65 0.06 300); /* Light Purple */
+  --chart-3: oklch(0.55 0.06 260); /* Soft Purple */
+  --chart-4: oklch(0.7 0.05 320);  /* Very Light Purple */
+  --chart-5: oklch(0.75 0.04 280); /* Almost White Purple */
+
+  /* Sidebar - Dark Grey */
+  --sidebar: oklch(0.08 0.01 280);
+  --sidebar-foreground: oklch(0.9 0.01 280);
+  --sidebar-primary: oklch(0.6 0.08 280);
+  --sidebar-primary-foreground: oklch(0.08 0.01 280);
+  --sidebar-accent: oklch(0.12 0.01 280);
+  --sidebar-accent-foreground: oklch(0.9 0.01 280);
+  --sidebar-border: oklch(0.15 0.01 280);
+  --sidebar-ring: oklch(0.6 0.08 280);
 }
 
 @layer base {
@@ -146,20 +146,20 @@
     @apply border-border outline-ring/50;
   }
   
-  body {
-    @apply bg-background text-foreground font-sans;
-    background-image: 
-      radial-gradient(circle at 20% 80%, oklch(0.6 0.2 280 / 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, oklch(0.6 0.2 160 / 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, oklch(0.5 0.15 300 / 0.05) 0%, transparent 50%);
-  }
-  
-  .dark body {
-    background-image: 
-      radial-gradient(circle at 20% 80%, oklch(0.4 0.15 280 / 0.2) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, oklch(0.4 0.15 160 / 0.2) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, oklch(0.3 0.1 300 / 0.1) 0%, transparent 50%);
-  }
+      body {
+        @apply bg-background text-foreground font-sans;
+        background-image:
+          radial-gradient(circle at 20% 80%, oklch(0.7 0.08 280 / 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, oklch(0.8 0.06 280 / 0.02) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, oklch(0.75 0.05 300 / 0.01) 0%, transparent 50%);
+      }
+
+      .dark body {
+        background-image:
+          radial-gradient(circle at 20% 80%, oklch(0.6 0.08 280 / 0.05) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, oklch(0.65 0.06 280 / 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, oklch(0.7 0.05 300 / 0.02) 0%, transparent 50%);
+      }
 }
 
 /* Aurora Borealis Animations */
@@ -188,25 +188,25 @@
 
 @keyframes aurora-glow {
   0%, 100% { 
-    box-shadow: 0 0 20px oklch(0.6 0.2 280 / 0.3); 
+    box-shadow: 0 0 10px oklch(0.7 0.08 280 / 0.1); 
   }
   50% { 
-    box-shadow: 0 0 40px oklch(0.6 0.2 160 / 0.4), 0 0 60px oklch(0.6 0.2 280 / 0.2); 
+    box-shadow: 0 0 20px oklch(0.8 0.06 280 / 0.15), 0 0 30px oklch(0.7 0.08 280 / 0.1); 
   }
 }
 
-.aurora-shimmer {
-  background: linear-gradient(
-    45deg,
-    oklch(0.6 0.2 280 / 0.1),
-    oklch(0.6 0.2 160 / 0.1),
-    oklch(0.5 0.15 300 / 0.1),
-    oklch(0.6 0.2 160 / 0.1),
-    oklch(0.6 0.2 280 / 0.1)
-  );
-  background-size: 300% 300%;
-  animation: aurora-shimmer 8s ease-in-out infinite;
-}
+    .aurora-shimmer {
+      background: linear-gradient(
+        45deg,
+        oklch(0.7 0.08 280 / 0.02),
+        oklch(0.8 0.06 280 / 0.01),
+        oklch(0.75 0.05 300 / 0.01),
+        oklch(0.8 0.06 280 / 0.01),
+        oklch(0.7 0.08 280 / 0.02)
+      );
+      background-size: 300% 300%;
+      animation: aurora-shimmer 8s ease-in-out infinite;
+    }
 
 .aurora-float {
   animation: aurora-float 6s ease-in-out infinite;
@@ -233,11 +233,11 @@
   background: oklch(0.15 0.08 280);
 }
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, oklch(0.6 0.2 280), oklch(0.6 0.2 160));
-  border-radius: 4px;
-}
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, oklch(0.7 0.08 280), oklch(0.8 0.06 280));
+      border-radius: 4px;
+    }
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, oklch(0.7 0.2 280), oklch(0.7 0.2 160));
-}
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, oklch(0.6 0.08 280), oklch(0.7 0.06 280));
+    }
