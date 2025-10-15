@@ -40,6 +40,28 @@ export function ProfileDropdown() {
 
   const supabase = createSupabaseBrowserClient();
 
+  const loadAgentInfo = useCallback(async (organizationId: string) => {
+    try {
+      const { data } = await supabase
+        .from('receptionist_settings')
+        .select('id, business_name, status, status_message, created_at')
+        .eq('organization_id', organizationId)
+        .single();
+
+      if (data) {
+        setAgent({
+          id: data.id,
+          business_name: data.business_name,
+          status: data.status,
+          status_message: data.status_message,
+          created_at: data.created_at
+        });
+      }
+    } catch (error) {
+      console.error('Error loading agent info:', error);
+    }
+  }, [supabase]);
+
   const loadUserProfile = useCallback(async () => {
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -86,27 +108,6 @@ export function ProfileDropdown() {
     loadUserProfile();
   }, [loadUserProfile]);
 
-  async function loadAgentInfo(organizationId: string) {
-    try {
-      const { data } = await supabase
-        .from('receptionist_settings')
-        .select('id, business_name, status, status_message, created_at')
-        .eq('organization_id', organizationId)
-        .single();
-
-      if (data) {
-        setAgent({
-          id: data.id,
-          business_name: data.business_name,
-          status: data.status,
-          status_message: data.status_message,
-          created_at: data.created_at
-        });
-      }
-    } catch (error) {
-      console.error('Error loading agent info:', error);
-    }
-  }
 
   async function handleLogout() {
     try {

@@ -1,3 +1,5 @@
+"use client";
+
 import { SetupCheck } from "@/components/setup-check";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,8 +18,38 @@ import {
   Sparkles
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 function HomeContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const supabase = createSupabaseBrowserClient();
+
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const code = searchParams.get('code');
+      if (code) {
+        try {
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) {
+            console.error('OAuth callback error:', error);
+            return;
+          }
+          if (data.user) {
+            // Redirect to dashboard after successful authentication
+            router.push('/dashboard');
+          }
+        } catch (error) {
+          console.error('OAuth callback error:', error);
+        }
+      }
+    };
+
+    handleOAuthCallback();
+  }, [searchParams, supabase.auth, router]);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

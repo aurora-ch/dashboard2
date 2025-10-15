@@ -17,8 +17,8 @@
 
 1. In your Supabase dashboard, go to Authentication > URL Configuration
 2. Add your Render URL to the redirect URLs:
-   - `https://your-app-name.onrender.com/auth/callback`
-   - `https://your-app-name.onrender.com/dashboard`
+   - `https://your-app-name.onrender.com/auth/callback` (for OAuth callback)
+   - `https://your-app-name.onrender.com/dashboard` (for email magic links)
 3. Add your domain to the site URL: `https://your-app-name.onrender.com`
 
 ## Step 3: Deploy to Render

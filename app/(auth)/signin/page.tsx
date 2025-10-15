@@ -28,12 +28,12 @@ function SignInForm() {
     setIsLoading(true);
     setStatus(null);
     
-    // Use environment variable for production, network IP for development
+    // Use OAuth callback URL for proper handling
     const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL 
-      ? `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard`
+      ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
       : process.env.NODE_ENV === 'development' 
-        ? 'http://10.50.31.119:3000/dashboard'
-        : `${window.location.origin}/dashboard`;
+        ? 'http://10.50.31.119:3000/auth/callback'
+        : `${window.location.origin}/auth/callback`;
     
     const { error } = await supabase.auth.signInWithOtp({ 
       email,
@@ -49,12 +49,12 @@ function SignInForm() {
     setIsLoading(true);
     setStatus(null);
     
-    // Use environment variable for production, network IP for development
+    // Use OAuth callback URL for proper handling
     const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL 
-      ? `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard`
+      ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
       : process.env.NODE_ENV === 'development' 
-        ? 'http://10.50.31.119:3000/dashboard'
-        : `${window.location.origin}/dashboard`;
+        ? 'http://10.50.31.119:3000/auth/callback'
+        : `${window.location.origin}/auth/callback`;
     
     const { error } = await supabase.auth.signInWithOAuth({ 
       provider: "google",
