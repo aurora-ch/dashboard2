@@ -12,6 +12,18 @@ export function SetupCheck({ children }: { children: React.ReactNode }) {
     // Check if environment variables are properly configured
     const checkConfiguration = async () => {
       try {
+        // Check if environment variables are present
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        
+        if (!supabaseUrl || !supabaseAnonKey || 
+            supabaseUrl === 'https://your-project.supabase.co' || 
+            supabaseAnonKey === 'your-anon-key') {
+          setIsConfigured(false);
+          setError("Supabase environment variables are not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
+          return;
+        }
+
         // Try to create a Supabase client to test configuration
         const { createSupabaseBrowserClient } = await import("@/lib/supabase-browser");
         createSupabaseBrowserClient();
@@ -55,15 +67,16 @@ export function SetupCheck({ children }: { children: React.ReactNode }) {
             <div className="space-y-3">
               <h3 className="font-semibold">To fix this issue:</h3>
               <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                <li>Create a <code className="bg-gray-100 px-1 rounded">.env.local</code> file in the project root</li>
-                <li>Add your Supabase credentials:
+                <li>Go to your <a href="https://dashboard.render.com/web/srv-d3nm6o9gv73c73cf13o0" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Render Dashboard</a></li>
+                <li>Navigate to the "Environment" tab</li>
+                <li>Add these environment variables:
                   <pre className="bg-gray-100 p-2 rounded mt-1 text-xs">
 {`NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here`}
                   </pre>
                 </li>
                 <li>Get these values from your <a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Supabase Dashboard</a></li>
-                <li>Restart the development server</li>
+                <li>Redeploy your service after adding the environment variables</li>
               </ol>
             </div>
 
