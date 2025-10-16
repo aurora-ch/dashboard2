@@ -68,7 +68,7 @@ export function SetupCheck({ children }: { children: React.ReactNode }) {
               <h3 className="font-semibold">To fix this issue:</h3>
               <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
                 <li>Go to your <a href="https://dashboard.render.com/web/srv-d3nm6o9gv73c73cf13o0" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Render Dashboard</a></li>
-                <li>Navigate to the "Environment" tab</li>
+                <li>Navigate to the &quot;Environment&quot; tab</li>
                 <li>Add these environment variables:
                   <pre className="bg-gray-100 p-2 rounded mt-1 text-xs">
 {`NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
