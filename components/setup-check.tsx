@@ -12,25 +12,26 @@ export function SetupCheck({ children }: { children: React.ReactNode }) {
     // Check if environment variables are properly configured
     const checkConfiguration = async () => {
       try {
-        // Check if environment variables are present
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        // Try to create a Supabase client to test configuration
+        const { createSupabaseBrowserClient } = await import("@/lib/supabase-browser");
+        const supabase = createSupabaseBrowserClient();
         
-        if (!supabaseUrl || !supabaseAnonKey || 
-            supabaseUrl === 'https://your-project.supabase.co' || 
-            supabaseAnonKey === 'your-anon-key') {
+        // Test the connection by trying to get the current session
+        const { error } = await supabase.auth.getSession();
+        
+        // If we get an error that suggests invalid credentials, show config error
+        if (error && (error.message.includes('Invalid API key') || error.message.includes('Invalid URL'))) {
           setIsConfigured(false);
           setError("Supabase environment variables are not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
           return;
         }
-
-        // Try to create a Supabase client to test configuration
-        const { createSupabaseBrowserClient } = await import("@/lib/supabase-browser");
-        createSupabaseBrowserClient();
+        
+        // If we get here, the configuration is working
         setIsConfigured(true);
-      } catch (err) {
+      } catch {
+        // If there's any error, assume it's a configuration issue
         setIsConfigured(false);
-        setError(err instanceof Error ? err.message : "Configuration error");
+        setError("Supabase environment variables are not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
       }
     };
 
