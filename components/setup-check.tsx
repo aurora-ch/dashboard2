@@ -16,15 +16,8 @@ export function SetupCheck({ children }: { children: React.ReactNode }) {
         const { createSupabaseBrowserClient } = await import("@/lib/supabase-browser");
         const supabase = createSupabaseBrowserClient();
         
-        // Add a timeout to prevent hanging
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Configuration check timeout')), 5000)
-        );
-        
-        // Test the connection by trying to get the current session with timeout
-        const sessionPromise = supabase.auth.getSession();
-        const result = await Promise.race([sessionPromise, timeoutPromise]) as { error?: { message: string } };
-        const { error } = result;
+        // Test the connection by trying to get the current session
+        const { error } = await supabase.auth.getSession();
         
         // If we get an error that suggests invalid credentials, show config error
         if (error && (error.message.includes('Invalid API key') || error.message.includes('Invalid URL'))) {
@@ -35,14 +28,25 @@ export function SetupCheck({ children }: { children: React.ReactNode }) {
         
         // If we get here, the configuration is working
         setIsConfigured(true);
-      } catch {
-        // If there's any error (including timeout), assume it's a configuration issue
+      } catch (err) {
+        // If there's any error, assume it's a configuration issue
+        console.error('Configuration check failed:', err);
         setIsConfigured(false);
         setError("Supabase environment variables are not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
       }
     };
 
-    checkConfiguration();
+    // Add a timeout to the entire check to prevent hanging
+    const timeoutId = setTimeout(() => {
+      if (isConfigured === null) {
+        setIsConfigured(false);
+        setError("Configuration check timed out. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
+      }
+    }, 3000);
+
+    checkConfiguration().finally(() => {
+      clearTimeout(timeoutId);
+    });
   }, []);
 
   if (isConfigured === null) {
