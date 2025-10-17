@@ -16,17 +16,17 @@ export function SetupCheck({ children }: { children: React.ReactNode }) {
         const { createSupabaseBrowserClient } = await import("@/lib/supabase-browser");
         const supabase = createSupabaseBrowserClient();
         
-        // Test the connection by trying to get the current session
-        const { error } = await supabase.auth.getSession();
+        // Test the connection with a simple query that should work with valid credentials
+        const { error } = await supabase.from('_supabase_migrations').select('*').limit(1);
         
         // If we get an error that suggests invalid credentials, show config error
-        if (error && (error.message.includes('Invalid API key') || error.message.includes('Invalid URL'))) {
+        if (error && (error.message.includes('Invalid API key') || error.message.includes('Invalid URL') || error.message.includes('JWT'))) {
           setIsConfigured(false);
           setError("Supabase environment variables are not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
           return;
         }
         
-        // If we get here, the configuration is working
+        // If we get here, the configuration is working (even if the table doesn't exist, we got a proper response)
         setIsConfigured(true);
       } catch (err) {
         // If there's any error, assume it's a configuration issue
@@ -42,7 +42,7 @@ export function SetupCheck({ children }: { children: React.ReactNode }) {
         setIsConfigured(false);
         setError("Configuration check timed out. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
       }
-    }, 3000);
+    }, 2000);
 
     checkConfiguration().finally(() => {
       clearTimeout(timeoutId);
