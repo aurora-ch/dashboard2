@@ -1,47 +1,117 @@
 # Render Deployment Setup
 
-## Environment Variables Required
+## 🚀 Quick Setup Using Secret Files (RECOMMENDED)
 
-To deploy successfully on Render, you need to set these environment variables in your Render dashboard:
+The easiest way to configure your Render deployment is using Secret Files.
+
+### Step 1: Upload Secret File
+
+1. Go to your [Render Dashboard](https://dashboard.render.com)
+2. Select your `aurora-dashboard` service
+3. Navigate to the **"Environment"** tab
+4. Scroll down to the **"Secret Files"** section
+5. Click **"Add Secret File"**
+6. Configure the secret file:
+   - **Filename**: `.env`
+   - **Contents**: Copy and paste the contents from `.env.render` file in your project
+7. Click **"Save Changes"**
+8. **Redeploy** your service
+
+### Step 2: Verify Deployment
+
+After redeployment:
+- Your app will automatically load environment variables from the `.env` secret file
+- Test Google OAuth login
+- Verify dashboard loads correctly
+
+---
+
+## 📋 Alternative: Manual Environment Variables
+
+If you prefer to set environment variables manually instead of using Secret Files:
 
 ### Required Environment Variables
 
 1. **NEXT_PUBLIC_SUPABASE_URL**
+   - Value: `https://kqdiickzowoffpleavfh.supabase.co`
    - Get this from your Supabase project settings
-   - Format: `https://your-project-id.supabase.co`
 
 2. **NEXT_PUBLIC_SUPABASE_ANON_KEY**
+   - Value: Your Supabase anon key
    - Get this from your Supabase project settings
-   - This is the public anon key (safe to expose)
 
 3. **NEXT_PUBLIC_SITE_URL**
-   - Set to: `https://aurora-dashboard.onrender.com`
+   - Value: `https://aurora-dashboard.onrender.com`
    - This is already configured in render.yaml
 
 ### Optional Environment Variables
 
 4. **NEXT_PUBLIC_GOOGLE_MAPS_API_KEY**
-   - For Google Maps integration (if using)
+   - For Google Maps/Places integration
 
 5. **VAPI_API_KEY**
-   - For Vapi integration (if using)
+   - For Vapi AI receptionist integration
 
-## How to Set Environment Variables in Render
+6. **N8N_WEBHOOK_URL**
+   - For n8n workflow integration
+
+### How to Set Manual Environment Variables
 
 1. Go to your Render dashboard
 2. Navigate to your `aurora-dashboard` service
 3. Go to the "Environment" tab
-4. Add each environment variable with its value
-5. Click "Save Changes"
-6. Redeploy your service
+4. Click "Add Environment Variable"
+5. Add each variable with its key and value
+6. Click "Save Changes"
+7. Redeploy your service
 
-## Current Status
+---
 
-The app will now work even without environment variables (using fallback values), but for full functionality you should configure the Supabase environment variables.
+## 🔐 Security Notes
 
-## Testing
+- **Secret Files** are more secure than environment variables for sensitive data
+- Secret files are accessible at `/etc/secrets/.env` at runtime
+- Never commit `.env.render` to your repository (it's in .gitignore)
+- Only use the `anon` key in the frontend (never use `service_role` key)
 
-After setting the environment variables:
-1. The OAuth flow should work properly
-2. The dashboard should load without errors
-3. User profiles will be created in your Supabase database
+---
+
+## 📦 Files Included for Render
+
+- `.env.render` - Secret file template with your Supabase credentials
+- `render.yaml` - Render service configuration
+
+---
+
+## 🧪 Testing After Deployment
+
+After setting up and redeploying:
+
+1. ✅ **OAuth Login**: Test Google sign-in flow
+2. ✅ **Dashboard**: Verify metrics and data load correctly
+3. ✅ **Database**: Ensure user profiles are created in Supabase
+4. ✅ **API Routes**: Test agent creation and call logging
+
+---
+
+## 🐛 Troubleshooting
+
+### "Configuration Required" Error
+
+If you see this error:
+- Verify the Secret File was uploaded correctly
+- Check the filename is exactly `.env` (not `.env.local`)
+- Ensure the file contents match the format in `.env.render`
+- Redeploy after making changes
+
+### Database Connection Issues
+
+- Verify Supabase URL and key are correct
+- Check that your Supabase project is active
+- Ensure RLS policies are properly configured
+
+### OAuth Not Working
+
+- Check that redirect URLs are configured in Supabase
+- Verify `NEXT_PUBLIC_SITE_URL` matches your Render URL
+- Ensure Google OAuth is enabled in Supabase
