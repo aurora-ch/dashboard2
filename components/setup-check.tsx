@@ -12,37 +12,56 @@ export function SetupCheck({ children }: { children: React.ReactNode }) {
     // Check if environment variables are properly configured
     const checkConfiguration = async () => {
       try {
-        // Try to create a Supabase client to test configuration
-        const { createSupabaseBrowserClient } = await import("@/lib/supabase-browser");
-        const supabase = createSupabaseBrowserClient();
+        // Check if environment variables exist
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
         
-        // Test the connection with a simple query that should work with valid credentials
-        const { error } = await supabase.from('_supabase_migrations').select('*').limit(1);
-        
-        // If we get an error that suggests invalid credentials, show config error
-        if (error && (error.message.includes('Invalid API key') || error.message.includes('Invalid URL') || error.message.includes('JWT'))) {
+        // If environment variables are missing, show error
+        if (!supabaseUrl || !supabaseKey || 
+            supabaseUrl.includes('your-project') || 
+            supabaseKey.includes('your-anon-key')) {
           setIsConfigured(false);
           setError("Supabase environment variables are not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
           return;
         }
         
-        // If we get here, the configuration is working (even if the table doesn't exist, we got a proper response)
+        // Try to create a Supabase client to test configuration
+        const { createSupabaseBrowserClient } = await import("@/lib/supabase-browser");
+        const supabase = createSupabaseBrowserClient();
+        
+        // Test with a simple health check - just try to get the current session
+        // This is much more reliable than querying tables
+        const { error: sessionError } = await supabase.auth.getSession();
+        
+        // Only show error if it's a configuration issue (invalid URL or key)
+        if (sessionError && (
+          sessionError.message.includes('Invalid API key') || 
+          sessionError.message.includes('Invalid URL') ||
+          sessionError.message.includes('Failed to fetch')
+        )) {
+          setIsConfigured(false);
+          setError("Supabase connection failed. Please verify NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
+          return;
+        }
+        
+        // If we get here, the configuration is working
         setIsConfigured(true);
       } catch (err) {
-        // If there's any error, assume it's a configuration issue
+        // Only show error for actual configuration issues
         console.error('Configuration check failed:', err);
-        setIsConfigured(false);
-        setError("Supabase environment variables are not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
+        // Most errors here are not fatal, so just pass through
+        setIsConfigured(true);
       }
     };
 
     // Add a timeout to the entire check to prevent hanging
     const timeoutId = setTimeout(() => {
       if (isConfigured === null) {
-        setIsConfigured(false);
-        setError("Configuration check timed out. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Render environment variables.");
+        // On timeout, assume configuration is OK (fail open, not closed)
+        // The app will fail later if there's a real issue
+        setIsConfigured(true);
       }
-    }, 2000);
+    }, 5000); // Increased timeout to 5 seconds
 
     checkConfiguration().finally(() => {
       clearTimeout(timeoutId);

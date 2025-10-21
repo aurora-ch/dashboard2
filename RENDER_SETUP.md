@@ -1,78 +1,70 @@
 # Render Deployment Setup
 
-## 🚀 Quick Setup Using Secret Files (RECOMMENDED)
+## ⚠️ IMPORTANT: Use Environment Variables (NOT Secret Files!)
 
-The easiest way to configure your Render deployment is using Secret Files.
+**For Next.js `NEXT_PUBLIC_*` variables, you MUST use Environment Variables, NOT Secret Files.**
 
-### Step 1: Upload Secret File
+Secret Files don't work because Next.js needs these variables at BUILD TIME, but Secret Files are only available at RUNTIME.
+
+---
+
+## 🚀 Quick Setup (CORRECT METHOD)
+
+### Step 1: Add Environment Variables in Render
 
 1. Go to your [Render Dashboard](https://dashboard.render.com)
 2. Select your `aurora-dashboard` service
 3. Navigate to the **"Environment"** tab
-4. Scroll down to the **"Secret Files"** section
-5. Click **"Add Secret File"**
-6. Configure the secret file:
-   - **Filename**: `.env`
-   - **Contents**: Copy and paste the contents from `.env.render` file in your project
-7. Click **"Save Changes"**
-8. **Redeploy** your service
+4. Find the **"Environment Variables"** section (at the top)
+5. Click **"Add Environment Variable"** and add each of these:
 
-### Step 2: Verify Deployment
+### Required Environment Variables (Add These Now)
 
-After redeployment:
-- Your app will automatically load environment variables from the `.env` secret file
-- Test Google OAuth login
-- Verify dashboard loads correctly
+**Variable 1:**
+- **Key**: `NEXT_PUBLIC_SUPABASE_URL`
+- **Value**: `https://kqdiickzowoffpleavfh.supabase.co`
 
----
+**Variable 2:**
+- **Key**: `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **Value**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxZGlpY2t6b3dvZmZwbGVhdmZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2MjIxODcsImV4cCI6MjA3NjE5ODE4N30.5GxQe8p97-CUV426zgHVI7EN5IlFTUJv0aKVXLNQsc8`
 
-## 📋 Alternative: Manual Environment Variables
-
-If you prefer to set environment variables manually instead of using Secret Files:
-
-### Required Environment Variables
-
-1. **NEXT_PUBLIC_SUPABASE_URL**
-   - Value: `https://kqdiickzowoffpleavfh.supabase.co`
-   - Get this from your Supabase project settings
-
-2. **NEXT_PUBLIC_SUPABASE_ANON_KEY**
-   - Value: Your Supabase anon key
-   - Get this from your Supabase project settings
-
-3. **NEXT_PUBLIC_SITE_URL**
-   - Value: `https://aurora-dashboard.onrender.com`
-   - This is already configured in render.yaml
+**Variable 3:**
+- **Key**: `NEXT_PUBLIC_SITE_URL`
+- **Value**: `https://aurora-dashboard.onrender.com`
 
 ### Optional Environment Variables
 
-4. **NEXT_PUBLIC_GOOGLE_MAPS_API_KEY**
-   - For Google Maps/Places integration
+**Variable 4 (Optional):**
+- **Key**: `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
+- **Value**: Your Google Maps API key (for Places integration)
 
-5. **VAPI_API_KEY**
-   - For Vapi AI receptionist integration
+**Variable 5 (Optional):**
+- **Key**: `VAPI_API_KEY`
+- **Value**: Your Vapi API key (for AI receptionist)
 
-6. **N8N_WEBHOOK_URL**
-   - For n8n workflow integration
+**Variable 6 (Optional):**
+- **Key**: `N8N_WEBHOOK_URL`
+- **Value**: Your n8n webhook URL (for workflow automation)
 
-### How to Set Manual Environment Variables
+### Step 2: Save and Redeploy
 
-1. Go to your Render dashboard
-2. Navigate to your `aurora-dashboard` service
-3. Go to the "Environment" tab
-4. Click "Add Environment Variable"
-5. Add each variable with its key and value
-6. Click "Save Changes"
-7. Redeploy your service
+1. Click **"Save Changes"** at the bottom
+2. Click **"Manual Deploy"** (top right)
+3. Select **"Clear build cache & deploy"** (recommended)
+4. Wait 3-5 minutes for deployment to complete
+5. Test your app at https://aurora-dashboard.onrender.com
 
 ---
 
 ## 🔐 Security Notes
 
-- **Secret Files** are more secure than environment variables for sensitive data
-- Secret files are accessible at `/etc/secrets/.env` at runtime
-- Never commit `.env.render` to your repository (it's in .gitignore)
-- Only use the `anon` key in the frontend (never use `service_role` key)
+- **For `NEXT_PUBLIC_*` variables**: Must use Environment Variables (they're embedded in the client-side JavaScript anyway)
+- **For sensitive API keys**: Use Environment Variables or Secret Files (both work at runtime)
+- **Secret Files vs Environment Variables**: 
+  - Secret Files = Runtime only (not available during build)
+  - Environment Variables = Build time + Runtime
+- Never commit `.env.render` or `.env.local` to your repository (they're in .gitignore)
+- Only use the `anon` key in the frontend (never use `service_role` key in client-side code)
 
 ---
 
