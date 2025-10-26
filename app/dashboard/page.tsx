@@ -676,50 +676,6 @@ export default function Dashboard() {
                 >
                   Start AI Call
                 </button>
-                <button
-                  onClick={() => {
-                    console.log('🔍 Debug Google Maps API...')
-                    console.log('Window.google:', window.google)
-                    console.log('Google.maps:', window.google?.maps)
-                    console.log('Google.maps.places:', window.google?.maps?.places)
-                    console.log('Input element:', document.getElementById('businessSearch'))
-                    console.log('Google Maps loaded:', window.googleMapsLoaded)
-                    console.log('Google Maps initialized:', window.googleMapsInitialized)
-                    
-                    // Reset flags and try again
-                    window.googleMapsRetryCount = 0
-                    if (window.google && window.google.maps && window.google.maps.places) {
-                      initGoogleMaps()
-                    } else {
-                      loadGoogleMapsAPI()
-                    }
-                  }}
-                  className="px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors whitespace-nowrap"
-                >
-                  Fix Maps
-                </button>
-                <button
-                  onClick={async () => {
-                    console.log('🔧 Manual Vapi Web SDK Load...')
-                    console.log('Vapi already loaded:', typeof window.Vapi)
-                    
-                    // Try dynamic import in a different scope to avoid webpack bundling
-                    try {
-                      console.log('🔄 Trying manual dynamic import...')
-                      const VapiModule = await Function('return import("https://cdn.skypack.dev/@vapi-ai/web@latest")')()
-                      const Vapi = VapiModule.default || VapiModule.Vapi || VapiModule
-                      window.Vapi = Vapi
-                      console.log('✅ Manual Vapi Web SDK loaded via dynamic import')
-                      console.log('Vapi constructor:', typeof window.Vapi)
-                    } catch (error) {
-                      console.error('❌ Manual dynamic import failed:', error)
-                      console.log('Try the "Start AI Call" button - it will use the same approach')
-                    }
-                  }}
-                  className="px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors whitespace-nowrap"
-                >
-                  Load Vapi
-                </button>
               </div>
               
               {selectedPlace && (
