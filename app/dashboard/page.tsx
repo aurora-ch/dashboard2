@@ -298,8 +298,8 @@ export default function Dashboard() {
       console.log('📤 Sending to webhook:', businessData)
       setCallStatus('Creating AI assistant...')
 
-      // Send to n8n webhook
-      const response = await fetch('https://n8n.goreview.fr/webhook-test/623986cb-0aac-4af5-8135-d6da55814b95', {
+      // Send to n8n webhook via API route (server-side proxy to avoid CORS)
+      const response = await fetch('/api/webhook', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
