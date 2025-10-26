@@ -333,9 +333,9 @@ export default function Dashboard() {
       setCallStatus('Initializing call...')
       await startVapiCall(assistantId)
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error)
-      setCallStatus('Error: ' + error.message)
+      setCallStatus('Error: ' + (error?.message || 'Unknown error'))
       setCallTestLoading(false)
     }
   }
@@ -412,7 +412,7 @@ export default function Dashboard() {
             reject(new Error('Vapi Web SDK loading timeout'))
           }, 15000) // 15 second timeout
           
-          const handleVapiLoaded = (event) => {
+          const handleVapiLoaded = (event: any) => {
             clearTimeout(timeout)
             window.removeEventListener('vapiLoaded', handleVapiLoaded)
             
@@ -438,13 +438,15 @@ export default function Dashboard() {
       console.log('🔑 Using Vapi API key: bcaecdb0-dcb7-4301-b524-1ff6a18373ce')
       console.log('🔍 Vapi constructor available:', typeof window.Vapi)
       
+      let vapi: any
+      
       try {
-        const vapi = new window.Vapi('bcaecdb0-dcb7-4301-b524-1ff6a18373ce')
+        vapi = new window.Vapi('bcaecdb0-dcb7-4301-b524-1ff6a18373ce')
         console.log('✅ Vapi instance created successfully')
         setVapiInstance(vapi)
         setIsCallActive(true)
         setCallStatus('Connecting to assistant...')
-      } catch (vapiError) {
+      } catch (vapiError: any) {
         console.error('❌ Error creating Vapi instance:', vapiError)
         throw vapiError
       }
@@ -477,9 +479,9 @@ export default function Dashboard() {
         setCallStatus('Listening...')
       })
       
-      vapi.on('error', (error) => {
+      vapi.on('error', (error: any) => {
         console.error('❌ Vapi error:', error)
-        setCallStatus('Error: ' + error.message)
+        setCallStatus('Error: ' + (error?.message || 'Unknown error'))
         setIsCallActive(false)
         setCallTestLoading(false)
       })
@@ -498,19 +500,19 @@ export default function Dashboard() {
         console.log('📞 Calling vapi.start()...')
         await vapi.start(assistantId)
         console.log('✅ vapi.start() called successfully')
-      } catch (startError) {
+      } catch (startError: any) {
         console.error('❌ Error in vapi.start():', startError)
         console.error('❌ Start error details:', {
-          message: startError.message,
-          stack: startError.stack,
-          name: startError.name
+          message: startError?.message,
+          stack: startError?.stack,
+          name: startError?.name
         })
         throw startError
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error starting call:', error)
-      setCallStatus('Error starting call: ' + error.message)
+      setCallStatus('Error starting call: ' + (error?.message || 'Unknown error'))
       setIsCallActive(false)
       setCallTestLoading(false)
     }

@@ -8,6 +8,7 @@ declare global {
     googleMapsLoaded?: boolean;
     googleMapsInitialized?: boolean;
     googleMapsRetryCount?: number;
+    [key: string]: any; // Allow any dynamic property
   }
 }
 

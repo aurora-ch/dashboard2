@@ -217,10 +217,10 @@ export class AdaptedDatabaseService {
     }
 
     const totalCalls = calls?.length || 0
-    const completedCalls = calls?.filter(call => call.status === 'completed').length || 0
-    const failedCalls = calls?.filter(call => call.status === 'failed').length || 0
+    const completedCalls = calls?.filter((call: any) => call.status === 'completed').length || 0
+    const failedCalls = calls?.filter((call: any) => call.status === 'failed').length || 0
     
-    const totalDuration = calls?.reduce((sum, call) => sum + (call.duration_seconds || 0), 0) || 0
+    const totalDuration = calls?.reduce((sum: number, call: any) => sum + (call.duration_seconds || 0), 0) || 0
     const avgDuration = totalCalls > 0 ? totalDuration / totalCalls : 0
     
     const successRate = totalCalls > 0 ? (completedCalls / totalCalls) * 100 : 0
@@ -251,7 +251,7 @@ export class AdaptedDatabaseService {
     }
 
     const typeMap = new Map<string, number>()
-    calls?.forEach(call => {
+    calls?.forEach((call: any) => {
       if (call.intent) {
         typeMap.set(call.intent, (typeMap.get(call.intent) || 0) + 1)
       }
@@ -281,7 +281,7 @@ export class AdaptedDatabaseService {
     }
 
     const hourlyMap = new Map<number, number>()
-    calls?.forEach(call => {
+    calls?.forEach((call: any) => {
       if (call.created_at) {
         const hour = new Date(call.created_at).getHours()
         hourlyMap.set(hour, (hourlyMap.get(hour) || 0) + 1)
@@ -354,7 +354,7 @@ export class AdaptedDatabaseService {
         type: call.intent ? call.intent.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown',
         duration: this.formatDuration(call.duration_seconds || 0),
         status: call.status === 'completed' ? 'Completed' : 
-                call.status === 'failed' ? 'Failed' : 'In Progress'
+                call.status === 'failed' ? 'Failed' : 'Completed' as 'Completed' | 'Failed' | 'Transferred'
       }))
 
       return {
