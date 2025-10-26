@@ -351,6 +351,13 @@ export default function Dashboard() {
       if (!window.Vapi) {
         console.log('📦 Loading Vapi Web SDK via script tag (like working HTML)...')
         
+        // Check if Vapi script is already in DOM
+        const existingScript = document.querySelector('script[src*="vapi-ai/web"]')
+        if (existingScript) {
+          console.log('⚠️ Vapi script tag already exists in DOM, removing it first')
+          existingScript.remove()
+        }
+        
         // Try multiple CDN sources with fallback
         const cdnSources = [
           'https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/index.js',
@@ -365,15 +372,18 @@ export default function Dashboard() {
           try {
             console.log(`🔄 Trying CDN source ${i + 1}: ${cdnSources[i]}`)
             
+            // Create fresh script tag for each attempt
+            const script = document.createElement('script')
+            script.src = cdnSources[i]
+            script.async = true
+            script.crossOrigin = 'anonymous'
+            
             await new Promise((resolve, reject) => {
               const timeout = setTimeout(() => {
                 console.log(`⏰ Timeout for source ${i + 1}`)
+                document.head.removeChild(script)
                 reject(new Error('Vapi Web SDK loading timeout'))
-              }, 10000)
-              
-              const script = document.createElement('script')
-              script.src = cdnSources[i]
-              script.async = true
+              }, 15000) // Increased to 15 seconds
               
               script.onload = () => {
                 clearTimeout(timeout)
@@ -393,9 +403,10 @@ export default function Dashboard() {
                         loaded = true
                         resolve(true)
                       } else {
+                        document.head.removeChild(script)
                         reject(new Error('Vapi not available after script load'))
                       }
-                    }, 1000)
+                    }, 2000) // Increased wait time
                   }
                 }
                 checkVapi()
@@ -404,14 +415,15 @@ export default function Dashboard() {
               script.onerror = (error) => {
                 clearTimeout(timeout)
                 console.error(`❌ Vapi Web SDK source ${i + 1} failed:`, error)
+                document.head.removeChild(script)
                 reject(error)
               }
               
               document.head.appendChild(script)
             })
             
-          } catch (error) {
-            console.log(`❌ CDN source ${i + 1} failed:`, error)
+          } catch (error: any) {
+            console.log(`❌ CDN source ${i + 1} failed:`, error.message)
             if (i === cdnSources.length - 1) {
               throw new Error('All Vapi CDN sources failed to load')
             }
