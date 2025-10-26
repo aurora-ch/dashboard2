@@ -299,7 +299,7 @@ export default function Dashboard() {
       setCallStatus('Creating AI assistant...')
 
       // Send to n8n webhook
-      const response = await fetch('https://n8n.goreview.fr/webhook/623986cb-0aac-4af5-8135-d6da55814b95', {
+      const response = await fetch('https://n8n.goreview.fr/webhook-test/623986cb-0aac-4af5-8135-d6da55814b95', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
