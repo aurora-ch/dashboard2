@@ -351,49 +351,72 @@ export default function Dashboard() {
       if (!window.Vapi) {
         console.log('📦 Loading Vapi Web SDK via script tag (like working HTML)...')
         
-        // Create script tag (not dynamic import, to avoid Skypack bundling issues)
-        const script = document.createElement('script')
-        script.src = 'https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/index.js'
-        script.async = true
+        // Try multiple CDN sources with fallback
+        const cdnSources = [
+          'https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/index.js',
+          'https://unpkg.com/@vapi-ai/web@latest/dist/index.js',
+          'https://cdn.jsdelivr.net/npm/@vapi-ai/web@2.5.0/dist/index.js',
+          'https://unpkg.com/@vapi-ai/web@2.5.0/dist/index.js'
+        ]
         
-        // Wait for script to load
-        await new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error('Vapi Web SDK loading timeout'))
-          }, 15000) // 15 second timeout
-          
-          script.onload = () => {
-            clearTimeout(timeout)
-            console.log('✅ Vapi Web SDK script loaded')
+        let loaded = false
+        
+        for (let i = 0; i < cdnSources.length && !loaded; i++) {
+          try {
+            console.log(`🔄 Trying CDN source ${i + 1}: ${cdnSources[i]}`)
             
-            // Check if Vapi is available (may need a moment for global exposure)
-            const checkVapi = () => {
-              if (window.Vapi) {
-                console.log('✅ Vapi constructor available:', typeof window.Vapi)
-                resolve(true)
-              } else {
-                console.log('⏳ Waiting for Vapi to be available...')
-                setTimeout(() => {
+            await new Promise((resolve, reject) => {
+              const timeout = setTimeout(() => {
+                console.log(`⏰ Timeout for source ${i + 1}`)
+                reject(new Error('Vapi Web SDK loading timeout'))
+              }, 10000)
+              
+              const script = document.createElement('script')
+              script.src = cdnSources[i]
+              script.async = true
+              
+              script.onload = () => {
+                clearTimeout(timeout)
+                console.log(`✅ Vapi Web SDK script ${i + 1} loaded`)
+                
+                // Check if Vapi is available
+                const checkVapi = () => {
                   if (window.Vapi) {
-                    console.log('✅ Vapi constructor available after delay:', typeof window.Vapi)
+                    console.log('✅ Vapi constructor available:', typeof window.Vapi)
+                    loaded = true
                     resolve(true)
                   } else {
-                    reject(new Error('Vapi not available after script load'))
+                    console.log('⏳ Waiting for Vapi to be available...')
+                    setTimeout(() => {
+                      if (window.Vapi) {
+                        console.log('✅ Vapi constructor available after delay:', typeof window.Vapi)
+                        loaded = true
+                        resolve(true)
+                      } else {
+                        reject(new Error('Vapi not available after script load'))
+                      }
+                    }, 1000)
                   }
-                }, 500)
+                }
+                checkVapi()
               }
+              
+              script.onerror = (error) => {
+                clearTimeout(timeout)
+                console.error(`❌ Vapi Web SDK source ${i + 1} failed:`, error)
+                reject(error)
+              }
+              
+              document.head.appendChild(script)
+            })
+            
+          } catch (error) {
+            console.log(`❌ CDN source ${i + 1} failed:`, error)
+            if (i === cdnSources.length - 1) {
+              throw new Error('All Vapi CDN sources failed to load')
             }
-            checkVapi()
           }
-          
-          script.onerror = (error) => {
-            clearTimeout(timeout)
-            console.error('❌ Vapi Web SDK script failed:', error)
-            reject(new Error('Failed to load Vapi Web SDK'))
-          }
-          
-          document.head.appendChild(script)
-        })
+        }
         
       } else {
         console.log('✅ Vapi Web SDK already loaded')
