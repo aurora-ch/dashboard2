@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { Session } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
+import Script from 'next/script'
 
 export default function Home() {
   const [session, setSession] = useState<Session | null>(null)
@@ -37,6 +38,29 @@ export default function Home() {
 
     return () => subscription.unsubscribe()
   }, [router, supabase])
+
+  useEffect(() => {
+    // Inject auth handlers into the iframe after it loads
+    if (typeof window !== 'undefined') {
+      // Override any login/get started buttons in the HTML
+      const handleClick = (e: MouseEvent) => {
+        const target = e.target as HTMLElement
+        if (
+          target?.textContent?.toLowerCase().includes('get started') ||
+          target?.textContent?.toLowerCase().includes('sign in') ||
+          target?.textContent?.toLowerCase().includes('login') ||
+          target?.closest('a[href*="login"]') ||
+          target?.closest('button[onclick*="login"]')
+        ) {
+          e.preventDefault()
+          setShowLoginModal(true)
+        }
+      }
+      
+      document.addEventListener('click', handleClick, true)
+      return () => document.removeEventListener('click', handleClick, true)
+    }
+  }, [])
 
   const handleGoogleLogin = async () => {
     setIsLoading(true)
@@ -92,205 +116,17 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="relative z-20 backdrop-blur-md bg-white/80 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <img 
-              src="/logos/logoblakc.png" 
-              alt="Aurora Logo" 
-              className="h-8 w-auto object-contain"
-            />
-          </div>
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-gray-900 font-medium hover:text-gray-600 transition-colors">Home</a>
-            <a href="#" className="text-gray-900 font-medium hover:text-gray-600 transition-colors">About</a>
-            <button 
-              onClick={() => setShowLoginModal(true)}
-              className="bg-gray-900 text-white px-6 py-2 rounded-full font-medium hover:bg-gray-800 transition-colors"
-            >
-              Contact Us
-            </button>
-          </nav>
-          <div className="md:hidden">
-            <button className="text-gray-900" title="Open menu" aria-label="Open menu">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
+    <>
+      {/* Embed the HTML landing page */}
+      <iframe 
+        src="/landingpage.html"
+        className="fixed top-0 left-0 w-full h-screen border-0"
+        title="Aurora Landing Page"
+      />
 
-      {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Badge */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-teal/10 to-aurora-blue/10 border border-aurora-teal/20 text-aurora-teal px-4 py-2 rounded-full text-sm font-medium">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-              AI Receptionist
-            </div>
-          </div>
-
-          {/* Main Heading */}
-          <div className="text-center mb-8">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              Aurora AI Receptionist.<br />
-              <span className="bg-gradient-to-r from-aurora-teal to-aurora-blue bg-clip-text text-transparent">No missed calls.</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Aurora is an AI receptionist with tools integrated. ROI focused, super easy to setup in 1 minute. 
-              Never miss another call with intelligent call handling and automated responses.
-            </p>
-          </div>
-
-          {/* CTA Button */}
-          <div className="text-center mb-16">
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="bg-gradient-to-r from-aurora-teal to-aurora-blue hover:shadow-lg hover:shadow-aurora-teal/25 text-white px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center gap-3 transition-all duration-300 transform hover:-translate-y-1"
-            >
-              Get Started in 1 Min
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Hero Image */}
-          <div className="relative max-w-5xl mx-auto">
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-              <div className="bg-gray-50 rounded-2xl p-6">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100">
-                    <span className="text-gray-900 font-bold text-lg">A</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 text-lg">Aurora AI Receptionist</h3>
-                    <p className="text-sm text-gray-500">Call analytics & performance insights</p>
-                  </div>
-                </div>
-                
-                {/* Dashboard Preview */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                    <div className="text-2xl font-bold text-gray-900">1,247</div>
-                    <div className="text-sm text-gray-600">Total Calls</div>
-                  </div>
-                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                    <div className="text-2xl font-bold text-gray-900">94.2%</div>
-                    <div className="text-sm text-gray-600">Success Rate</div>
-                  </div>
-                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                    <div className="text-2xl font-bold text-gray-900">4m 32s</div>
-                    <div className="text-sm text-gray-600">Avg Duration</div>
-                  </div>
-                </div>
-
-                {/* Chart Preview */}
-                <div className="bg-white rounded-xl p-4 h-32 flex items-end gap-2 shadow-sm border border-gray-100">
-                  <div className="bg-blue-500 rounded-t w-8 h-20"></div>
-                  <div className="bg-blue-500 rounded-t w-8 h-16"></div>
-                  <div className="bg-blue-500 rounded-t w-8 h-24"></div>
-                  <div className="bg-blue-500 rounded-t w-8 h-12"></div>
-                  <div className="bg-blue-500 rounded-t w-8 h-20"></div>
-                  <div className="bg-blue-500 rounded-t w-8 h-14"></div>
-                  <div className="bg-blue-500 rounded-t w-8 h-18"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Packed with features
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Packed with AI receptionist features
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Aurora integrates seamlessly with your existing tools and workflows to provide intelligent call handling and automated responses.
-            </p>
-          </div>
-
-          {/* Feature Cards */}
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Smart Call Routing</h3>
-              <p className="text-gray-600 mb-6 text-sm leading-relaxed">Intelligent call routing and automated responses. Never miss another call with AI-powered call handling.</p>
-              <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
-                Core Feature
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Analytics & Insights</h3>
-              <p className="text-gray-600 mb-6 text-sm leading-relaxed">Track call performance, success rates, and ROI metrics with detailed analytics and reporting.</p>
-              <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
-                Analytics
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100">
-                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">1-Minute Setup</h3>
-              <p className="text-gray-600 mb-6 text-sm leading-relaxed">Super easy setup in just 1 minute. Get Aurora running with your existing phone system instantly.</p>
-              <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-medium">
-                Extension
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600"></div>
-        <div className="relative max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to never miss another call?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Discover how Aurora AI Receptionist can transform your call handling and boost your ROI.
-          </p>
-          <button
-            onClick={() => setShowLoginModal(true)}
-            className="bg-white text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors"
-          >
-            Get Started in 1 Min
-          </button>
-        </div>
-      </section>
-
-      {/* Login Modal */}
+      {/* Login Modal - Rendered on top */}
       {showLoginModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
           <div className="bg-white rounded-2xl p-8 w-full max-w-md">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
@@ -394,45 +230,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-      {/* Footer */}
-      <footer className="py-16 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-100">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div className="md:col-span-1">
-              <img 
-                src="/logos/logoblakc.png" 
-                alt="Aurora Logo" 
-                className="h-8 w-auto object-contain mb-4"
-              />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-4">Pages</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-gray-900">Homepage</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900">Pricing</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900">About us</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-4">Information</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-gray-900">Contact Us</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900">Terms</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-4">Follow</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-gray-900">LinkedIn</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-200 pt-8 text-center">
-            <p className="text-gray-500 text-sm">© 2025 Aurora</p>
-          </div>
-        </div>
-      </footer>
-    </main>
+    </>
   )
 }
